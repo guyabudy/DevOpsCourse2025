@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: drupaluser
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: drupaldb
+    networks:
+      - drupal
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  drupal:
+    image: drupal:latest
+    container_name: drupal-app
+    ports:
+      - "8080:80"
+    networks:
+      - drupal
+    depends_on:
+      - postgres
+    environment:
+      DRUPAL_DB_HOST: postgres-db
+      DRUPAL_DB_USER: drupaluser
+      DRUPAL_DB_PASS: password123
+      DRUPAL_DB_NAME: drupaldb
+
+networks:
+  drupal:
+    driver: bridge
+
+volumes:
+  db_data:
